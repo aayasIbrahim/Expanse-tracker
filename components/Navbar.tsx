@@ -14,13 +14,13 @@ export default function Navbar() {
     { name: "Dashboard", href: "/" },
     { name: "Add Expense", href: "/add" },
     { name: "Report", href: "/report" },
-    { name: "Employe", href: "/clients" },
+    { name: "Employee", href: "/clients" },
     { name: "Transactions", href: "/transactions" },
     { name: "Settings", href: "/settings" },
   ];
 
   return (
-    <nav className="w-full bg-gray-900 text-white shadow-md relative z-50">
+    <nav className="w-full bg-gray-900 text-white shadow-md relative z-50 sticky top-0 left-0">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left: Logo */}
         <div className="flex items-center">

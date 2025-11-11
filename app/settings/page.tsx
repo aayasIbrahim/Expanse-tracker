@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 
 export default function Settings() {
-  const [currency, setCurrency] = useState("USD");
-  const [registrationEnabled, setRegistrationEnabled] = useState(true);
+
   const [newCategory, setNewCategory] = useState("");
   const [categories, setCategories] = useState(["Food", "Transport", "Salary", "Shopping"]);
 
@@ -25,31 +24,11 @@ export default function Settings() {
       {/* Currency Setting */}
       <div className="bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-800 mb-6">
         <h2 className="text-xl font-semibold mb-4 text-gray-300">Currency</h2>
-        <select
-          value={currency}
-          onChange={(e) => setCurrency(e.target.value)}
-          className="w-full max-w-xs px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-green-500 outline-none"
-        >
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-          <option value="GBP">GBP (£)</option>
-          <option value="BDT">BDT (৳)</option>
-        </select>
+      
       </div>
 
-      {/* Registration Setting */}
-      <div className="bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-800 mb-6 flex flex-col sm:flex-row items-center justify-between">
-        <h2 className="text-xl font-semibold mb-4 sm:mb-0 text-gray-300">User Registration</h2>
-        <label className="flex items-center gap-3">
-          <span className="text-gray-300">{registrationEnabled ? "Enabled" : "Disabled"}</span>
-          <input
-            type="checkbox"
-            checked={registrationEnabled}
-            onChange={() => setRegistrationEnabled(!registrationEnabled)}
-            className="w-6 h-6 accent-green-500"
-          />
-        </label>
-      </div>
+
+     
 
       {/* Expense Categories */}
       <div className="bg-gray-900 p-6 rounded-2xl shadow-md border border-gray-800">
