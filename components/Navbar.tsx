@@ -14,7 +14,7 @@ export default function Navbar() {
     { name: "Dashboard", href: "/" },
     { name: "Add Expense", href: "/add" },
     { name: "Report", href: "/report" },
-    { name: "Clients", href: "/clients" },
+    { name: "Employe", href: "/clients" },
     { name: "Transactions", href: "/transactions" },
     { name: "Settings", href: "/settings" },
   ];

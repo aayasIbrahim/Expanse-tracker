@@ -3,9 +3,9 @@ import React, { useState } from "react";
 
 // Example client data — replace later with MongoDB fetch
 const sampleClients = [
-  { id: 1, name: "John Doe", email: "john@example.com", role: "user", createdAt: "2025-01-01" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", role: "user", createdAt: "2025-02-15" },
-  { id: 3, name: "Admin User", email: "admin@example.com", role: "admin", createdAt: "2025-01-05" },
+  { id: 1, name: "John Doe", email: "john@example.com", role: "Manager", createdAt: "2025-01-01" },
+  { id: 2, name: "Nayem", email: "nayem@example.com", role: "Manager", createdAt: "2025-02-15" },
+  { id: 3, name: "Shihab", email: "shihab@example.com", role: "Founder", createdAt: "2025-01-05" },
 ];
 
 export default function Clients() {
@@ -27,7 +27,7 @@ export default function Clients() {
 
   return (
     <div className="min-h-screen bg-black text-white px-6 py-10">
-      <h1 className="text-3xl font-bold mb-6 text-green-400 text-center">Clients Management</h1>
+      <h1 className="text-3xl font-bold mb-6 text-green-400 text-center">Employe Management</h1>
 
       {/* Search */}
       <div className="mb-6 flex justify-center">
