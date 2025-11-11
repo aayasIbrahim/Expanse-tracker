@@ -4,22 +4,21 @@ import connectDB from "./db";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
 
-// ✅ Extend NextAuth types
+// ✅ Extend NextAuth types safely
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      name?: string | null;
-      email?: string | null;
-      role?: string | null;
+      name: string | null;
+      email: string | null;
+      role: string | null;
     };
   }
-
   interface User {
     id: string;
-    name?: string;
-    email?: string;
-    role?: string;
+    name?: string | null;
+    email?: string | null;
+    role?: string | null;
   }
 }
 
@@ -35,7 +34,7 @@ declare module "next-auth/jwt" {
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
- 
+
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -48,20 +47,27 @@ export const authOptions: NextAuthOptions = {
           if (!credentials?.email || !credentials?.password) return null;
 
           await connectDB();
-          const user = await User.findOne({ email: credentials.email });
-          if (!user) return null;
+
+          const email = credentials.email.trim().toLowerCase(); // ✅ normalize
+          const user = await User.findOne({ email });
+          if (!user) {
+            console.log("User not found");
+            return null;
+          }
 
           const isValid = await bcrypt.compare(
             credentials.password,
             user.password
           );
-          if (!isValid) return null;
+          if (!isValid) {
+            console.log("Password incorrect");
+            return null;
+          }
 
-          // ✅ Return consistent user data
           return {
             id: user._id.toString(),
-            name: user.name ?? "",
-            email: user.email,
+            name: user.name ?? null,
+            email: user.email ?? null,
             role: user.role ?? "user",
           };
         } catch (err) {
@@ -71,27 +77,33 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+
   callbacks: {
     async jwt({ token, user }) {
-      // ✅ Save user info in token
+      // ✅ If user exists (login), attach user info to token
       if (user) {
         token.id = user.id;
-        token.name = user.name ?? "";
-    
+        token.name = user.name ?? null;
+        token.email = user.email ?? null;
         token.role = user.role ?? "user";
       }
       return token;
     },
 
     async session({ session, token }) {
-      // ✅ Attach token data to session.user
+      // ✅ Attach token info to session.user safely
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.name = token.firstName as string;
+        session.user.id = token.id ?? "";
+        session.user.name = token.name ?? null;
+        session.user.email = token.email ?? null;
         session.user.role = token.role ?? "user";
       }
       return session;
     },
+  },
+
+  pages: {
+    signIn: "/login", // ✅ Custom login page
   },
 };
 
