@@ -39,6 +39,7 @@ export default function Navbar() {
     if (routeRoles && !routeRoles.includes(userRole)) {
       router.push("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, pathname, userRole, router]);
 
   return (
