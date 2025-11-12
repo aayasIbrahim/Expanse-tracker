@@ -43,6 +43,7 @@ useEffect(() => {
 
   fetchTransactions();
 }, []);
+console.log("Transactions:", transactions);
   // Calculate totals
   const totalIncome = transactions
     .filter((t) => t.type === "income")

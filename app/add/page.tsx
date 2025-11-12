@@ -10,8 +10,8 @@ export default function AddExpense() {
 
   const categories =
     type === "expense"
-      ? ["Food", "Transport", "Shopping", "Bills", "Health", "Other"]
-      : ["Salary", "Business", "Freelance", "Investments", "Other"];
+      ? ["Teacher fee","Manager fee","Venue Cost", "Other"]
+      : ["Science Student", "Business Student", "Humanities student", "Investments", "Other"];
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
