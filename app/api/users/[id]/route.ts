@@ -6,16 +6,35 @@ interface Params {
   id: string;
 }
 
-export async function DELETE(
+interface UpdateBody {
+  role: string;
+}
+export async function PUT(
   req: NextRequest,
-  { params }: { params: Params }
+  context: { params: Promise<Params> }
 ) {
   try {
+    const { id } = await context.params; // ✅ FIX: await params
+    
     await dbConnect();
 
-    const deletedUser = await User.findByIdAndDelete(params.id).lean();
+    const body: UpdateBody = await req.json();
+    const { role } = body;
 
-    if (!deletedUser) {
+    if (!role) {
+      return NextResponse.json(
+        { error: "Role is required" },
+        { status: 400 }
+      );
+    }
+
+    const user = await User.findByIdAndUpdate(
+      id,            // ✅ now correct
+      { role },
+      { new: true }
+    ).lean();
+
+    if (!user) {
       return NextResponse.json(
         { error: "User not found" },
         { status: 404 }
@@ -23,9 +42,10 @@ export async function DELETE(
     }
 
     return NextResponse.json(
-      { message: "User deleted successfully" },
+      { message: "User updated successfully", user },
       { status: 200 }
     );
+
   } catch (error) {
     const err = error as Error;
     return NextResponse.json(
