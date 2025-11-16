@@ -117,7 +117,7 @@ export default function Transactions() {
         <TransactionForm
           transaction={editTransaction}
           onClose={() => { setShowModal(false); setEditTransaction(null); }}
-          onSubmit={handleUpdate} // ✅ matches type now
+          onSubmit={handleUpdate} // 
         />
       )}
     </div>

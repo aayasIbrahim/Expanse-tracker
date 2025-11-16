@@ -1,127 +1,147 @@
 "use client";
-import React, { useState } from "react";
 
-// Example client data — replace later with MongoDB fetch
-const sampleClients = [
-  { id: 1, name: "John Doe", email: "john@example.com", role: "Manager", createdAt: "2025-01-01" },
-  { id: 2, name: "Nayem", email: "nayem@example.com", role: "Manager", createdAt: "2025-02-15" },
-  { id: 3, name: "Shihab", email: "shihab@example.com", role: "Founder", createdAt: "2025-01-05" },
-];
+import { useEffect, useState } from "react";
 
-export default function Clients() {
-  const [clients, setClients] = useState(sampleClients);
-  const [search, setSearch] = useState("");
+// --- Type Definition ---
+interface User {
+  _id: string;
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+  email: string;
+  role: "admin" | "manager" | "user";
+}
 
-  const filteredClients = clients.filter(
-    (c) =>
-      c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.email.toLowerCase().includes(search.toLowerCase())
-  );
+export default function Client() {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleDelete = (id: number) => {
-    if (confirm("Are you sure you want to delete this client?")) {
-      setClients(clients.filter((c) => c.id !== id));
-      alert("Client deleted successfully!");
-    }
+  useEffect(() => {
+    fetch("/api/users")
+      .then((res) => res.json())
+      .then((data: User[]) => setUsers(data))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const changeRole = async (id: string, role: User["role"]) => {
+    await fetch(`/api/users/${id}/role`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role }),
+    });
+
+    setUsers(users.map((u) => (u._id === id ? { ...u, role } : u)));
+  };
+
+  const deleteUser = async (id: string) => {
+    await fetch(`/api/users/${id}`, { method: "DELETE" });
+    setUsers(users.filter((u) => u._id !== id));
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-6 py-10">
-      <h1 className="text-3xl font-bold mb-6 text-green-400 text-center">Employe Management</h1>
+    <section className="min-h-screen bg-gray-900 text-gray-100">
+      <div className="p-6 container mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-center text-white">
+          Administration Panel
+        </h1>
 
-      {/* Search */}
-      <div className="mb-6 flex justify-center">
-        <input
-          type="text"
-          placeholder="Search by name or email..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full max-w-md px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:ring-2 focus:ring-green-500 outline-none"
-        />
-      </div>
-
-      {/* Desktop Table */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="min-w-full bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-          <thead className="bg-gray-800">
-            <tr>
-              <th className="px-6 py-3 text-left text-gray-300">Name</th>
-              <th className="px-6 py-3 text-left text-gray-300">Email</th>
-              <th className="px-6 py-3 text-left text-gray-300">Role</th>
-              <th className="px-6 py-3 text-left text-gray-300">Created At</th>
-              <th className="px-6 py-3 text-left text-gray-300">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredClients.length === 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full border border-gray-700 rounded-lg shadow-lg divide-y divide-gray-700">
+            <thead className="bg-gray-800 text-left text-gray-300">
               <tr>
-                <td colSpan={5} className="text-center py-6 text-gray-400">
-                  No clients found.
-                </td>
+                <th className="p-3">Name</th>
+                <th className="p-3">Email</th>
+                <th className="p-3">Role</th>
+                <th className="p-3 text-center">Actions</th>
               </tr>
-            ) : (
-              filteredClients.map((client) => (
-                <tr
-                  key={client.id}
-                  className="border-b border-gray-800 hover:bg-gray-800 transition"
-                >
-                  <td className="px-6 py-4">{client.name}</td>
-                  <td className="px-6 py-4">{client.email}</td>
-                  <td className="px-6 py-4 capitalize">{client.role}</td>
-                  <td className="px-6 py-4">{client.createdAt}</td>
-                  <td className="px-6 py-4 flex gap-3">
-                    <button
-                      className="px-3 py-1 bg-green-600 hover:bg-green-700 rounded-md text-white text-sm"
-                      onClick={() => alert("Edit functionality coming soon!")}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="px-3 py-1 bg-red-600 hover:bg-red-700 rounded-md text-white text-sm"
-                      onClick={() => handleDelete(client.id)}
-                    >
-                      Delete
-                    </button>
+            </thead>
+
+            <tbody className="divide-y divide-gray-700">
+              {loading ? (
+                <tr>
+                  <td className="p-3 text-center" colSpan={4}>
+                    Loading...
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                users.map((user) => (
+                  <tr
+                    key={user._id}
+                    className="hover:bg-gray-800 transition-colors duration-200"
+                  >
+                    <td className="p-3 break-words">
+                      {user.firstName && user.lastName
+                        ? `${user.firstName} ${user.lastName}`
+                        : user.name}
+                    </td>
 
-      {/* Mobile Cards */}
-      <div className="md:hidden grid grid-cols-1 gap-4">
-        {filteredClients.length === 0 ? (
-          <p className="text-center text-gray-400">No clients found.</p>
-        ) : (
-          filteredClients.map((client) => (
-            <div
-              key={client.id}
-              className="bg-gray-900 p-4 rounded-2xl shadow-md border border-gray-800"
-            >
-              <h2 className="text-lg font-semibold text-green-400">{client.name}</h2>
-              <p className="text-gray-300">{client.email}</p>
-              <p className="capitalize text-gray-300">Role: {client.role}</p>
-              <p className="text-gray-400 text-sm">Created: {client.createdAt}</p>
-              <div className="mt-3 flex gap-3">
-                <button
-                  className="flex-1 px-3 py-2 bg-green-600 hover:bg-green-700 rounded-md text-white text-sm"
-                  onClick={() => alert("Edit functionality coming soon!")}
-                >
-                  Edit
-                </button>
-                <button
-                  className="flex-1 px-3 py-2 bg-red-600 hover:bg-red-700 rounded-md text-white text-sm"
-                  onClick={() => handleDelete(client.id)}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
-          ))
-        )}
+                    <td className="p-3 break-words">{user.email}</td>
+
+                    <td
+                      className={`p-3 font-semibold ${
+                        user.role === "admin"
+                          ? "text-purple-400"
+                          : user.role === "manager"
+                          ? "text-blue-400"
+                          : "text-gray-300"
+                      }`}
+                    >
+                      {user.role}
+                    </td>
+
+                    <td className="p-3 flex flex-wrap justify-center gap-2">
+                      {/* Prevent editing/deleting admin */}
+                      {user.role !== "admin" && (
+                        <>
+                          {/* Make Admin */}
+                          <button
+                            onClick={() => changeRole(user._id, "admin")}
+                            className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors"
+                          >
+                            Make Admin
+                          </button>
+
+                          {/* Make Manager */}
+                          {user.role !== "manager" && (
+                            <button
+                              onClick={() => changeRole(user._id, "manager")}
+                              className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                            >
+                              Make Manager
+                            </button>
+                          )}
+
+                          {/* Make User */}
+                          {user.role !== "user" && (
+                            <button
+                              onClick={() => changeRole(user._id, "user")}
+                              className="px-3 py-1 bg-yellow-500 text-gray-900 rounded hover:bg-yellow-600 transition-colors"
+                            >
+                              Make User
+                            </button>
+                          )}
+
+                          {/* Delete */}
+                          <button
+                            onClick={() => deleteUser(user._id)}
+                            className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+
+          {!loading && users.length === 0 && (
+            <p className="text-center text-gray-400 mt-6">No users found.</p>
+          )}
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
