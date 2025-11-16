@@ -20,7 +20,7 @@ interface MonthlyData {
 
 export default function Report() {
   // 🟢 RTK Query Fetch
-  const { data, error, isLoading } = useGetTransactionsQuery();
+  const { data, error, isLoading } = useGetTransactionsQuery({ page: 1, limit: 1000 });
 
   const transactions = data?.transactions || [];
 
