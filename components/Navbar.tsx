@@ -21,7 +21,7 @@ export default function Navbar() {
     { name: "Report", href: "/report", roles: ["admin", "manager"] },
     { name: "Employee", href: "/clients", roles: ["admin"] },
     { name: "Transactions", href: "/transactions", roles: ["admin"] },
-    { name: "Settings", href: "/settings", roles: ["admin"] },
+    
   ];
 
   const userRole = session?.user?.role ?? "user";

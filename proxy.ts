@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-const protectedRoutes = ["/", "/add", "/report", "/clients", "/transactions", "/settings"];
+const protectedRoutes = ["/", "/add", "/report", "/clients", "/transactions"];
 const managerRoutes = ["/", "/add", "/report"];
 
 export async function proxy(req: NextRequest) {
